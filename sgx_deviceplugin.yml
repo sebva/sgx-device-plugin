@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: sgx-deviceplugin
-        image: sgx-deviceplugin:latest
+        image: sebvaucher/sgx-deviceplugin:0.1
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: devisgx
