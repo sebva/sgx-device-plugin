@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sgx-deviceplugin
+spec:
+  selector:
+    matchLabels:
+      app: sgx-deviceplugin
+  template:
+    metadata:
+      labels:
+        app: sgx-deviceplugin
+    spec:
+      containers:
+      - name: sgx-deviceplugin
+        image: sgx-deviceplugin:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: devisgx
+          mountPath: /dev/isgx
+        - name: kubeletsockets
+          mountPath: /var/lib/kubelet/device-plugins
+      volumes:
+      - name: devisgx
+        hostPath:
+          path: /dev/isgx
+      - name: kubeletsockets
+        hostPath:
+          path: /var/lib/kubelet/device-plugins
