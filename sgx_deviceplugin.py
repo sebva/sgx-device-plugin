@@ -3,6 +3,8 @@ import sys
 
 import os
 import time
+
+import stat
 from concurrent import futures
 
 import grpc
@@ -90,13 +92,21 @@ def register():
 
 
 def check_sgx():
-    return os.path.exists('/dev/isgx')
+    return os.path.exists(sgx_device_path) and stat.S_ISCHR(os.stat(sgx_device_path).st_mode)
+
+
+def sleep_endlessly():
+    pass
 
 
 if __name__ == '__main__':
-    if not check_sgx():
-        print("No SGX device detected, exiting...")
-        exit(0)
+    while not check_sgx():
+        print("No SGX device detected.")
+        try:
+            time.sleep(300)
+        except KeyboardInterrupt:
+            exit(0)
+            break
 
     try:
         print("Starting deviceplugin server")
@@ -109,7 +119,9 @@ if __name__ == '__main__':
                 while True:
                     time.sleep(3600)
             except KeyboardInterrupt:
-                server.stop(0)
+                pass
+
+            server.stop(0)
         else:
             print("Error with the registration, exiting...")
     except Exception as e:
